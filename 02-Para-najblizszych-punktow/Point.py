@@ -1,3 +1,9 @@
+"""
+    Klasa Point definiuje punkt na osi X i Y,
+    zwraca wspolrzedne. Kazdy punkt to osobny obiekt.
+"""
+
+
 class Point:
     def __init__(self, x, y):
         self.x = x

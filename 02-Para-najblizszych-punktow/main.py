@@ -32,5 +32,5 @@ def for_benchmark(points):
 
 
 if __name__ == '__main__':
-    from_files()
-    from_random(20)
+    from_files()  # uruchamia program z plikow z katalogu 'input'
+    from_random(20)  # uruchamia z wygenerowanych losowo punktow

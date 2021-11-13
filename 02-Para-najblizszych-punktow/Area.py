@@ -1,3 +1,28 @@
+"""
+    Klasa Area zawiera wszystkie funkcje potrzebne do prawidlowej realizacji zadania.
+    Cala konfiguracja jest zawarta w __init__. Tworzac obiekt Area, podaje tylko punkty, na podstawie ktorych
+    jest wykonywany program.
+
+    Kroki:
+        1. laduje punkty do slownika "points[all]"
+        2. sortuje zaladowane punkty po wspolrzednej X i Y, zapisuje w slowniku "points[by_x]", "points[by_y]"
+            pozwala to na zachowanie odpowieniej kolejnosci
+            O(n log n)
+        3. na podstawie "points[by_x] wyszukuje srodkowy punkt, ktory podzieli mi obszar na S1 i S2
+            O(1)
+        4. dziele punkty na S1 i S2 wzgledem "middle point"
+            O(n)
+        5. licze najmniejszy dystans miedzy kazdym punktem dla S1 i S2
+            O(n^2)
+        6. licze najmniejszy dystans miedzy S1 i S2, ustali mi to linie pomocnicze dla S3
+            O(1)
+        7. dziele punkty z S1 i S2 na S3, ktore wyznaczylem (o ile sie da)
+            O(n)
+        8. licze dystans dla S3
+            O(n)
+"""
+
+
 from matplotlib import pyplot as plt
 import functools
 import math
@@ -122,7 +147,7 @@ class Area:
         elif self.s1_min.get("distance") == -1:
             return self.s2_min.get("distance")
         elif self.s2_min.get("distance") == -1:
-            return self.s2_min.get("distance")
+            return self.s1_min.get("distance")
 
     def split_middle_points_by_middle_line(self, points):
         arr = []

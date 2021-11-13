@@ -21,7 +21,7 @@ def test_option_4(benchmark):
     benchmark(for_benchmark, points)
 
 
-def test_option_5(benchmark):
+def test_option_5(benchmark):  # test dla 10^5 i 10^7 konsumuje zbyt duzo czasu
     points = generate_random_points(10 ** 5)
     benchmark(for_benchmark, points)
 

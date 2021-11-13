@@ -1,3 +1,12 @@
+"""
+    - importowanie danych z plikow
+    - rysowanie plota
+    - rysowanie linii
+    - printowanie punktow
+    - generowanie losowych punktow
+"""
+
+
 import random
 
 from Point import *
