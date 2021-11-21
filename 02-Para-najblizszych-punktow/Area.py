@@ -14,7 +14,7 @@
         4. dziele punkty na S1 i S2 wzgledem "middle point"
             O(n)
         5. licze najmniejszy dystans miedzy kazdym punktem dla S1 i S2
-            O(log n)
+            O(n log n)
         6. licze najmniejszy dystans miedzy S1 i S2
             O(1)
 """
@@ -65,7 +65,7 @@ class Area:
     def closest_points(self, by_x, by_y):
         """
             Recursive Function
-            O(log n)
+            O(n log n)
         """
         size = len(by_x)
 
