@@ -15,12 +15,8 @@
             O(n)
         5. licze najmniejszy dystans miedzy kazdym punktem dla S1 i S2
             O(log n)
-        6. licze najmniejszy dystans miedzy S1 i S2, ustali mi to linie pomocnicze dla S3
+        6. licze najmniejszy dystans miedzy S1 i S2
             O(1)
-        7. dziele punkty z S1 i S2 na S3, ktore wyznaczylem (o ile sie da)
-            O(n)
-        8. licze dystans dla S3
-            O(n)
 """
 
 from matplotlib import pyplot as plt
