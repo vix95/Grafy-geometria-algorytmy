@@ -51,16 +51,11 @@ def draw_plot(area):
 
 def draw_line(area):
     plt.axvline(x=area.middle_point.get_x(), linewidth=2, linestyle="dashed", color="black")
-    plt.axvline(x=area.middle_point.get_x() - area.min_s1_s2_distance, linewidth=1, linestyle="dashed", color="black")
-    plt.axvline(x=area.middle_point.get_x() + area.min_s1_s2_distance, linewidth=1, linestyle="dashed", color="black")
 
 
 def draw_points_connection(area):
     draw_connection(area, area.s1_min.get("p1"), area.s1_min.get("p2"), "blue")
     draw_connection(area, area.s2_min.get("p1"), area.s2_min.get("p2"), "red")
-
-    if area.s3_min.get("p1") is not None and area.s3_min.get("p2") is not None:
-        draw_connection(area, area.s3_min.get("p1"), area.s3_min.get("p2"), "green")
 
 
 def draw_connection(area, p1, p2, color):
@@ -70,20 +65,11 @@ def draw_connection(area, p1, p2, color):
 
 
 def show_results(area):
-    if area.s3_min.get("p1") is not None and area.s3_min.get("p2") is not None:
-        plt.title("Minimal distance: {}\nS1: {} {}\nS2: {} {}\nS3: {} {}".
-                  format(area.min_s1_s2_distance,
-                         area.s1_min.get("p1").get_xy(), area.s1_min.get("p2").get_xy(),
-                         area.s2_min.get("p1").get_xy(), area.s2_min.get("p2").get_xy(),
-                         area.s3_min.get("p1").get_xy(), area.s3_min.get("p2").get_xy(),
-                         fontsize=40))
-
-    else:
-        plt.title("Minimal distance: {}\nS1: {} {}\nS2: {} {}".
-                  format(area.min_s1_s2_distance,
-                         area.s1_min.get("p1").get_xy(), area.s1_min.get("p2").get_xy(),
-                         area.s2_min.get("p1").get_xy(), area.s2_min.get("p2").get_xy(),
-                         fontsize=40))
+    plt.title("Minimal distance: {}\nS1: {} {}\nS2: {} {}".
+              format(area.min_s1_s2_distance,
+                     area.s1_min.get("p1").get_xy(), area.s1_min.get("p2").get_xy(),
+                     area.s2_min.get("p1").get_xy(), area.s2_min.get("p2").get_xy(),
+                     fontsize=40))
 
 
 def generate_random_points(qty):

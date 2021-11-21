@@ -1,3 +1,4 @@
+# coding=utf-8
 """
     Klasa Area zawiera wszystkie funkcje potrzebne do prawidlowej realizacji zadania.
     Cala konfiguracja jest zawarta w __init__. Tworzac obiekt Area, podaje tylko punkty, na podstawie ktorych
@@ -13,7 +14,7 @@
         4. dziele punkty na S1 i S2 wzgledem "middle point"
             O(n)
         5. licze najmniejszy dystans miedzy kazdym punktem dla S1 i S2
-            O(n^2)
+            O(log n)
         6. licze najmniejszy dystans miedzy S1 i S2, ustali mi to linie pomocnicze dla S3
             O(1)
         7. dziele punkty z S1 i S2 na S3, ktore wyznaczylem (o ile sie da)
@@ -21,7 +22,6 @@
         8. licze dystans dla S3
             O(n)
 """
-
 
 from matplotlib import pyplot as plt
 import functools
@@ -58,22 +58,83 @@ class Area:
 
             self.split_points_by_middle_line()
 
-            # calc minimum distance and get points for S1 and S2
-            self.s1_min = {"distance": 0.0, "p1": None, "p2": None}
-            self.s2_min = {"distance": 0.0, "p1": None, "p2": None}
-            self.s3_min = {"distance": 0.0, "p1": None, "p2": None}
-            self.get_min_distance(self.s1.get("x"), 1)  # filling s1
-            self.get_min_distance(self.s2.get("x"), 2)  # filling s2
+            point_1, point_2, min_distance = self.closest_points(self.s1.get("x"), self.s1.get("y"))
+            self.s1_min = {"distance": min_distance, "p1": point_1, "p2": point_2}
+            point_1, point_2, min_distance = self.closest_points(self.s2.get("x"), self.s2.get("y"))
+            self.s2_min = {"distance": min_distance, "p1": point_1, "p2": point_2}
 
             # calc distance for S1 and S2
             self.min_s1_s2_distance = self.set_min_s1_s2_distance()
 
-            # split points by middle S1 and S2
-            self.s3 = {
-                "s1": self.split_middle_points_by_middle_line(self.s1.get("y")),
-                "s2": self.split_middle_points_by_middle_line(self.s2.get("y"))
-            }
-            self.s3_min["distance"] = self.calc_distance_s3(self.s3.get("s1"), self.s3.get("s2"))
+    def closest_points(self, by_x, by_y):
+        """
+            Recursive Function
+            O(log n)
+        """
+        size = len(by_x)
+
+        if size == 1:
+            points = [by_x[0], by_y[0]]
+            return self.find_closest(points)
+        elif size <= 3:
+            return self.find_closest(by_x)
+
+        m = size // 2
+
+        middle_point = by_x[m - 1]
+        left_y = [p for p in by_y if p.get_x() < middle_point.get_x()]
+        right_y = [p for p in by_y if p.get_x() >= middle_point.get_x()]
+
+        (left_p1, left_p2, left_min_distance) = self.closest_points(by_x[:m], left_y)
+        (right_p1, right_p2, right_min_distance) = self.closest_points(by_x[m:], right_y)
+
+        if left_min_distance <= right_min_distance:
+            results = {"distance": left_min_distance, "p1": left_p1, "p2": left_p2}
+        else:
+            results = {"distance": right_min_distance, "p1": right_p1, "p2": right_p2}
+
+        # check if one point is on the left side and second is on the right
+        (point_1, point_2, p1_p2_min_distance) = self.closest_points_middle(by_x, by_y, results)
+
+        if results.get("distance") <= p1_p2_min_distance:
+            return results.get("p1"), results.get("p2"), results.get("distance")
+        else:
+            return point_1, point_2, p1_p2_min_distance
+
+    def closest_points_middle(self, by_x, by_y, results):
+        middle_point = by_x[len(by_x) // 2]
+
+        y = [point for point in by_y
+             if point.get_x() <= abs(results.get("distance") - middle_point.get_x())]
+
+        min_distance = results.get("distance")
+        points = [results.get("p1"), results.get("p2")]
+
+        for p1 in y:
+            for p2 in y:
+                if p1 != p2:
+                    calc_distance = self.calc_distance(p1, p2)
+                    if calc_distance < min_distance:
+                        points = p1, p2
+                        min_distance = calc_distance
+
+        return points[0], points[1], min_distance
+
+    def find_closest(self, by_x):
+        point_1 = by_x[0]
+        point_2 = by_x[1]
+        min_distance = self.calc_distance(point_1, point_2)
+
+        for p1 in by_x:
+            for p2 in by_x:
+                if p1 != p2:
+                    calc_min = self.calc_distance(p1, p2)
+                    if calc_min < min_distance:
+                        point_1 = p1
+                        point_2 = p2
+                        min_distance = calc_min
+
+        return point_1, point_2, min_distance
 
     @staticmethod
     def compare_by_x(p1, p2):
@@ -120,25 +181,6 @@ class Area:
     def calc_distance(p1, p2):
         return math.sqrt(((p2.get_x() - p1.get_x()) ** 2.0) + ((p2.get_y() - p1.get_y()) ** 2.0))
 
-    def get_min_distance(self, arr, key):
-        min_distance = self.calc_distance(arr[0], arr[1])
-
-        for p1 in arr:
-            for p2 in arr:
-                if p1 != p2:
-                    calc_min = self.calc_distance(p1, p2)
-                    if calc_min <= min_distance:
-                        min_distance = calc_min
-
-                        if key == 1:  # for S1
-                            self.s1_min["distance"] = min_distance
-                            self.s1_min["p1"] = p1
-                            self.s1_min["p2"] = p2
-                        elif key == 2:  # for S2
-                            self.s2_min["distance"] = min_distance
-                            self.s2_min["p1"] = p1
-                            self.s2_min["p2"] = p2
-
     def set_min_s1_s2_distance(self):
         if self.s1_min.get("distance") == -1 and self.s2_min.get("distance") == -1:
             return -1
@@ -157,33 +199,3 @@ class Area:
                 arr.append(p)
 
         return arr
-
-    def assign_min_based_on_s3(self, points1, points2):
-        is_found = False
-
-        for p1 in points1:
-            for p2 in points2:
-                dist = self.calc_distance(p1, p2)
-                if (p2.get_y() - p1.get_y() <= self.min_s1_s2_distance) and (p1.get_y() - p2.get_y() <= 0):
-                    if dist <= self.min_s1_s2_distance:
-                        is_found = True
-                        self.min_s1_s2_distance = dist
-                        self.s3_min["p1"] = p1
-                        self.s3_min["p2"] = p2
-
-        return self.min_s1_s2_distance if is_found else -1
-
-    def calc_distance_s3(self, points1, points2):
-        min_s3_1 = self.assign_min_based_on_s3(points1, points2)
-        min_s3_2 = self.assign_min_based_on_s3(points2, points1)
-
-        if min_s3_1 == -1 and min_s3_2 == -1:
-            return -1
-        elif min_s3_1 == -1:
-            return min_s3_2
-        elif min_s3_2 == -1:
-            return min_s3_1
-        elif min_s3_1 <= min_s3_2:
-            return min_s3_1
-        else:
-            return min_s3_2
