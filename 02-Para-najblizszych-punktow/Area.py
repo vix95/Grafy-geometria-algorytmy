@@ -106,11 +106,15 @@ class Area:
         min_distance = results.get("distance")
         points = [results.get("p1"), results.get("p2")]
 
-        for p1 in y:
-            for p2 in y:
+        for i in range(len(y)):
+            for j in range(i, len(y)):
+                p1 = y[i]
+                p2 = y[j]
                 if p1 != p2:
+                    if abs(p1.get_y() - p2.get_y()) > results.get("distance"):
+                        break
                     calc_distance = self.calc_distance(p1, p2)
-                    if calc_distance < min_distance:
+                    if calc_distance <= min_distance:
                         points = p1, p2
                         min_distance = calc_distance
 
