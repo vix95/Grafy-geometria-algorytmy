@@ -113,6 +113,7 @@ class Area:
                 if p1 != p2:
                     if abs(p1.get_y() - p2.get_y()) > results.get("distance"):
                         break
+
                     calc_distance = self.calc_distance(p1, p2)
                     if calc_distance <= min_distance:
                         points = p1, p2

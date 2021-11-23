@@ -22,10 +22,10 @@ def test_option_4(benchmark):
 
 
 def test_option_5(benchmark):
-    points = generate_random_points(10 ** 5)
+    points = generate_random_points(10 ** 4)
     benchmark(for_benchmark, points)
 
 
 def test_option_6(benchmark):
-    points = generate_random_points(10 ** 7)
+    points = generate_random_points(10 ** 5)
     benchmark(for_benchmark, points)
