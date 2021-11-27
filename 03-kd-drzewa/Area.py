@@ -1,5 +1,5 @@
 """
-    Klasa Area zawiera wszystkie funkcje potrzebne do prawidlowej realizacji zadania.
+    Klasa Area, definiuje obszar poddrzew i szukanego zakresu
 """
 
 

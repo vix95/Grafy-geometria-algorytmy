@@ -11,11 +11,9 @@
 
 """
 
-
 import functools
 from copy import deepcopy
 from matplotlib import pyplot as plt
-from Area import Area
 
 
 class Tree:
@@ -26,7 +24,8 @@ class Tree:
         self.points = {
             "all": points,
             "0": sorted(points, key=functools.cmp_to_key(self.compare_by_x)),  # x_sorted
-            "1": sorted(points, key=functools.cmp_to_key(self.compare_by_y))  # y_sorted
+            "1": sorted(points, key=functools.cmp_to_key(self.compare_by_y)),  # y_sorted
+            "solution": []
         }
 
         self.points["all_sorted"] = [self.points.get("x_sorted"), self.points.get("y_sorted")]
@@ -48,10 +47,10 @@ class Tree:
         xy = d % 2
         n = len(points[xy])
 
-        if n == 1:
-            return TreeNode(points[xy][0], None, None, None, xy, d=d)
-        elif n == 0:
+        if n == 0:
             return None
+        elif n == 1:
+            return TreeNode(points[xy][0], None, None, None, xy, d=d)
 
         (ind, median_point) = self.get_median_point(points[xy], n)
         median = median_point.xy[xy]
@@ -109,6 +108,39 @@ class Tree:
         print("\b\b", end="")
         print("")
 
+    def assign_areas(self, node):
+        if node.parent:
+            parent = node.parent
+            area = deepcopy(parent.area)
+
+            if node.xy == 0:
+                if node.is_left:
+                    area.max.y = parent.median
+                elif node.is_right:
+                    area.min.y = parent.median
+            elif node.xy == 1:
+                if node.is_left:
+                    area.max.x = parent.median
+                elif node.is_right:
+                    area.min.x = parent.median
+
+            node.area = area
+
+        if node.left:
+            self.assign_areas(node.left)
+
+        if node.right:
+            self.assign_areas(node.right)
+
+    def find_solution(self, node, area):
+        if node is not None:
+            if node.is_in_area(area):
+                print("Found Point: {}".format(node.point.get_xy()))
+                self.points["solution"].append(node.point)
+
+            self.find_solution(node.left, area)
+            self.find_solution(node.right, area)
+
 
 class TreeNode:
     def __init__(self, point, median, left, right, xy, d):
@@ -139,20 +171,25 @@ class TreeNode:
     def assign_parent(self):
         if self.left:
             self.left.parent = self
+
         if self.right:
             self.right.parent = self
 
     def in_order(self):
-
         if not self:
             return
 
         if self.left:
-            for x in self.left.in_order():
-                yield x
+            for p in self.left.in_order():
+                yield p
 
         yield self
 
         if self.right:
-            for x in self.right.in_order():
-                yield x
+            for p in self.right.in_order():
+                yield p
+
+        yield self
+
+    def is_in_area(self, area):
+        return area.min.x <= self.point.x <= area.max.x and area.min.y <= self.point.y <= area.max.y
