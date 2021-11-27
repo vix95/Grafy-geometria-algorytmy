@@ -42,51 +42,61 @@ def draw_plot(obj, to_find):
     obj.ax.axis("off")
 
     for i, point in enumerate(obj.points["all"]):
-        obj.ax.annotate(point.get_xy(), (x[i] + 0.02, y[i] + 0.04), fontsize=12)
+        obj.ax.annotate(point.get_xy(), (x[i] + 0.02, y[i] + 0.04), fontsize=20)
 
     obj.ax.margins(x=0.2, y=0.2)
-    plt.xlim([.1, obj.max_size - .1])
-    plt.ylim([.1, obj.max_size - .1])
-    draw_lines(obj)
+    plt.xlim([-.1, obj.plot_max_size + .1])
+    plt.ylim([-.1, obj.plot_max_size + .1])
+    draw_rectangle(obj)
 
     rect = plt.Rectangle((to_find.min.get_x(), to_find.min.get_y()),
                          to_find.max.get_x() - to_find.min.get_x(),
                          to_find.max.get_y() - to_find.min.get_y(),
                          color='r', alpha=.2)
-    #obj.ax.add_patch(rect)
+    obj.ax.add_patch(rect)
 
 
-def draw_lines(obj):
+def draw_rectangle(obj):
     for node in obj.tree.in_order():
-        if not node.is_root and not node.is_leaf:
-            obj.ax.plot([node.area.max[0], node.area.max[0]], [node.area.min[1], node.area.max[1]], color='k', lw=1)
-            obj.ax.plot([node.area.min[0], node.area.min[0]], [node.area.min[1], node.area.max[1]], color='k', lw=1)
-            obj.ax.plot([node.area.min[0], node.area.max[0]], [node.area.min[1], node.area.min[1]], color='k', lw=1)
-            obj.ax.plot([node.area.min[0], node.area.max[0]], [node.area.max[1], node.area.max[1]], color='k', lw=1)
+        if not node.is_root:
+            left_bottom = (node.area.min[0], node.area.min[1])
+            x_size = node.area.max[0] - left_bottom[0]
+            y_size = node.area.max[1] - left_bottom[1]
+            rect = plt.Rectangle(left_bottom, x_size, y_size, color='k', fill=None, alpha=1, lw=1)
+            obj.ax.add_patch(rect)
+
+            if node.xy == 0 and node.is_leaf:
+                x_size = abs(node.area.min[0] - node.point.get_x())
+                rect = plt.Rectangle(left_bottom, x_size, y_size, color='k', fill=None, alpha=1, lw=1)
+                obj.ax.add_patch(rect)
+            elif node.xy == 1 and node.is_leaf:
+                y_size = abs(node.area.min[1] - node.point.get_y())
+                rect = plt.Rectangle(left_bottom, x_size, y_size, color='k', fill=None, alpha=1, lw=1)
+                obj.ax.add_patch(rect)
 
 
 def assign_areas(node):
-    if not node.is_leaf:
-        if node.parent:
-            parent = node.parent
-            split = parent.median
-            node.area = parent.area
-            area = deepcopy(node.area)
+    if node.parent:
+        parent = node.parent
+        node.area = parent.area
+        area = deepcopy(parent.area)
 
-            if None not in (area, split):
-                if node.xy == 1:
-                    if node.is_left:
-                        area.max[0] = split
-                    else:
-                        area.min[0] = split
+        if None not in (area, parent.median):
+            if node.xy == 0:
+                if node.is_left:
+                    area.max[1] = parent.median
                 else:
-                    if node.is_left:
-                        area.max[1] = split
-                    else:
-                        area.min[1] = split
-                node.area = area
+                    area.min[1] = parent.median
+            elif node.xy == 1:
+                if node.is_left:
+                    area.max[0] = parent.median
+                else:
+                    area.min[0] = parent.median
 
-        if node.left:
-            assign_areas(node.left)
-        if node.right:
-            assign_areas(node.right)
+            node.area = area
+
+    if node.left:
+        assign_areas(node.left)
+
+    if node.right:
+        assign_areas(node.right)

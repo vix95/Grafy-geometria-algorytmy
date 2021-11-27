@@ -13,13 +13,15 @@
 
 
 import functools
+from copy import deepcopy
 from matplotlib import pyplot as plt
+from Area import Area
 
 
 class Tree:
-    def __init__(self, points, max_size):
-        self.max_size = max_size
-        self.fig, self.ax = plt.subplots(figsize=(max_size, max_size), dpi=100)
+    def __init__(self, points, plot_max_size):
+        self.plot_max_size = plot_max_size
+        self.fig, self.ax = plt.subplots(figsize=(plot_max_size, plot_max_size), dpi=100)
 
         self.points = {
             "all": points,
@@ -29,16 +31,17 @@ class Tree:
 
         self.points["all_sorted"] = [self.points.get("x_sorted"), self.points.get("y_sorted")]
         self.tree = self.build([self.points.get("0"), self.points.get("1")])
+        self.set_parents()
+
+    def set_parents(self):
+        for node in self.tree.in_order():
+            node.assign_parent()
 
     @staticmethod
-    def calc_median(points, n, xy):
+    def get_median_point(points, n):
         """ O(n) """
         n_half = n // 2
-
-        if n % 2 == 0:
-            return (points[n_half - 1].xy[xy] + points[n_half].xy[xy]) / 2
-        else:
-            return points[n_half].xy[xy]
+        return n_half, points[n_half]
 
     def build(self, points, d=0):
         """ Recursive function - O(n log n) """
@@ -46,17 +49,27 @@ class Tree:
         n = len(points[xy])
 
         if n == 1:
-            return TreeNode(points[xy][0], None, None, None, xy)
+            return TreeNode(points[xy][0], None, None, None, xy, d=d)
         elif n == 0:
             return None
 
-        median = self.calc_median(points[xy], n, xy)
+        (ind, median_point) = self.get_median_point(points[xy], n)
+        median = median_point.xy[xy]
+
+        xy_2d = 0 if xy == 1 else 1
+        del points[xy][ind]
+        for i, point in enumerate(points[xy_2d]):
+            if point == median_point:
+                del points[xy_2d][i]
+                break
+
         (left_x, right_x) = self.divide_points(points[0], xy, median)  # x
         (left_y, right_y) = self.divide_points(points[1], xy, median)  # y
 
-        t1 = self.build((left_x, left_y), d + 1)  # left Tree
-        t2 = self.build((right_x, right_y), d + 1)  # right Tree
-        return TreeNode(None, median, t1, t2, xy)
+        t1 = self.build((left_x, left_y), d=d + 1)  # left Tree
+        t2 = self.build((right_x, right_y), d=d + 1)  # right Tree
+
+        return TreeNode(median_point, median, t1, t2, xy, d=d)
 
     @staticmethod
     def divide_points(points, xy, median):
@@ -98,14 +111,14 @@ class Tree:
 
 
 class TreeNode:
-    def __init__(self, point, median, left, right, xy):
+    def __init__(self, point, median, left, right, xy, d):
         self.point = point
         self.median = median
         self.left = left
         self.right = right
         self.xy = xy
+        self.d = d
         self.parent = None
-        self.assign_parent()
 
     @property
     def is_leaf(self):

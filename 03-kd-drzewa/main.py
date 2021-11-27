@@ -7,10 +7,15 @@ from Tree import Tree, TreeNode
 def run_program(kdtree, name):
     print("[{}]: ".format(name), end=""),
     kdtree.print_points(kdtree.points["all"])
-    area_to_find = Area(import_file("input/" + name + "_search"))
-    kdtree.tree.area = Area([[0, 0], [kdtree.max_size, kdtree.max_size]])
-    assign_areas(kdtree.tree)
 
+    try:
+        area_to_find = Area(import_file("input/" + name + "_search"))
+    except OSError as e:
+        area_to_find = Area((Point(0, 0), Point(0, 0)))
+        print(e)
+
+    kdtree.tree.area = Area([[0, 0], [kdtree.plot_max_size, kdtree.plot_max_size]])
+    assign_areas(kdtree.tree)
     draw_plot(kdtree, area_to_find)
     plt.show()
 
