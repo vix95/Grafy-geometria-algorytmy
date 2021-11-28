@@ -134,12 +134,24 @@ class Tree:
 
     def find_solution(self, node, area):
         if node is not None:
-            if node.is_in_area(area):
+            print("Checking point: {}".format(node.point.get_xy()))
+            if node.is_point_in_area(area):
                 print("Found Point: {}".format(node.point.get_xy()))
                 self.points["solution"].append(node.point)
 
-            self.find_solution(node.left, area)
-            self.find_solution(node.right, area)
+            if node.left is not None and node.is_area_in_area(node.left.area, area):
+                print("Enter to left subtree: ({}) ({})".format(node.left.area.get_area_min,
+                                                                node.left.area.get_area_max))
+                self.find_solution(node.left, area)
+            else:
+                print("STOP searching left subtree for point: {}".format(node.point.get_xy()))
+
+            if node.right is not None and node.is_area_in_area(node.right.area, area):
+                print("Enter to right subtree: ({}) ({})".format(node.right.area.get_area_min,
+                                                                 node.right.area.get_area_max))
+                self.find_solution(node.right, area)
+            else:
+                print("STOP searching right subtree for point: {}".format(node.point.get_xy()))
 
 
 class TreeNode:
@@ -191,5 +203,10 @@ class TreeNode:
 
         yield self
 
-    def is_in_area(self, area):
+    def is_point_in_area(self, area):
         return area.min.x <= self.point.x <= area.max.x and area.min.y <= self.point.y <= area.max.y
+
+    @staticmethod
+    def is_area_in_area(node_area, area):
+        return (area.min.x >= node_area.min.x and area.min.y >= node_area.min.y) \
+               or (area.max.x <= node_area.max.x and area.max.y <= node_area.max.y)

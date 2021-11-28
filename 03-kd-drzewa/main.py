@@ -9,7 +9,7 @@ def run_program(kdtree, name):
     kdtree.print_points(kdtree.points["all"])
 
     try:
-        area_to_find = Area(import_file("input/" + name + "_search"))
+        area_to_find = Area(import_file("input/" + name + "_search_1"))
     except OSError as e:
         area_to_find = Area((Point(0, 0), Point(0, 0)))
         print(e)
@@ -40,4 +40,4 @@ def for_benchmark(points):
 
 if __name__ == '__main__':
     from_files()  # uruchamia program z plików z katalogu 'input'
-    from_random(20)  # uruchamia z wygenerowanych losowo punktów
+    #from_random(20)  # uruchamia z wygenerowanych losowo punktów
