@@ -9,7 +9,7 @@ def run_program(kdtree, name):
     kdtree.print_points(kdtree.points["all"])
 
     try:
-        area_to_find = Area(import_file("input/" + name + "_search_1"))
+        area_to_find = Area(import_file("input/" + name + "_search_2"))
     except OSError as e:
         area_to_find = Area((Point(0, 0), Point(0, 0)))
         print(e)
