@@ -28,16 +28,15 @@ class Graph:
                 self.tree[node_1.v] = node_1
                 self.tree[node_2.v] = node_2
             else:
-                node_1 = self.tree[v1]
                 if not self.tree[v2]:
                     node_2 = Node(v=v2)
-                    node_2.parent = node_1
                     self.tree[node_2.v] = node_2
                 else:
                     node_2 = self.tree[v2]
-                    node_2.parent = node_1
 
+                node_1 = self.tree[v1]
                 node_1.child.append(node_2)
+                node_2.parent = node_1
 
             if node_1.parent and node_1.parent.parent and node_1 not in node_1.parent.parent.grandchild:
                 node_1.parent.parent.grandchild.append(node_1)
@@ -64,6 +63,8 @@ class Graph:
                 vertex = vertex.next
 
             print("")
+
+        print("\n", end="")
 
     def visualize(self):
         graph = nx.Graph()

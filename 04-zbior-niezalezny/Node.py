@@ -6,6 +6,8 @@ class Node:
         self.grandchild = []
         self.parent = None
         self.I = 0
+        self.I_children = 0
+        self.I_grandchildren = 0
 
     @property
     def is_leaf(self):

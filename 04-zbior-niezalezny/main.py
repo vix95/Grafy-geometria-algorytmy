@@ -9,13 +9,17 @@ def run_program(edges, name):
     try:
         g = Graph(edges=edges)
         g.build()
-        g.print_graph()
+        # g.print_graph()
         g.visualize()
-
-        print("\n", end="")
         independent_set_recursive(g.root)
-        g.I = max(1 + sum(int(node.I) for node in g.root.grandchild), sum(int(node.I) for node in g.root.child))
-        print("Maximum independent set: {}".format(g.I))
+
+        """ Solution 1 - worse """
+        # g.I = max(1 + sum(int(node.I) for node in g.root.grandchild), sum(int(node.I) for node in g.root.child))
+
+        """ Solution 2 - better """
+        g.I = max(1 + g.root.I_grandchildren, g.root.I_children)
+
+        print("Maximum independent set: {}\n".format(g.I))
 
     except OSError as e:
         print(e)

@@ -25,13 +25,26 @@ def independent_set_recursive(node):
 
     if node.is_leaf:
         node.I = 1
+        add_I(node, node.I)
+
     elif node.has_children and node.children_count > i:
         while node.children_count > i:
             independent_set_recursive(node.child[i])
-            #node.I += node.child[i].I
             i += 1
 
-        node.I = max(1 + sum(int(node.I) for node in node.grandchild), sum(int(node.I) for node in node.child))
+        """ Solution 1 - worse """
+        # node.I = max(1 + sum(int(node.I) for node in node.grandchild), sum(int(node.I) for node in node.child))
 
-    print("Node {}: I = {}".format(node.v, node.I))
+        """ Solution 2 - better """
+        node.I = max(1 + node.I_grandchildren, node.I_children)
+        add_I(node, node.I)
 
+    print("Vertex {}: I = {}".format(node.v, node.I))
+
+
+def add_I(node, I):
+    if node.parent:
+        node.parent.I_children += I
+
+        if node.parent.parent:
+            node.parent.parent.I_grandchildren += I
