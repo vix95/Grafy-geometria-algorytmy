@@ -28,8 +28,10 @@ def independent_set_recursive(node):
     elif node.has_children and node.children_count > i:
         while node.children_count > i:
             independent_set_recursive(node.child[i])
-            node.I += node.child[i].I
+            #node.I += node.child[i].I
             i += 1
+
+        node.I = max(1 + sum(int(node.I) for node in node.grandchild), sum(int(node.I) for node in node.child))
 
     print("Node {}: I = {}".format(node.v, node.I))
 
