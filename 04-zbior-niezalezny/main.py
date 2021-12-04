@@ -1,5 +1,5 @@
 import os
-from Supportive import import_file, graphSets
+from Supportive import import_file, independent_set_recursive
 from Graph import Graph
 
 
@@ -12,27 +12,10 @@ def run_program(edges, name):
         g.print_graph()
         g.visualize()
 
-        E = [tuple(l) for l in g.edges]
-        graph = dict([])
-        for i in range(len(E)):
-            v1, v2 = E[i]
-
-            if (v1 not in graph):
-                graph[v1] = []
-            if (v2 not in graph):
-                graph[v2] = []
-
-            graph[v1].append(v2)
-            graph[v2].append(v1)
-
-        maximalIndependentSet = graphSets(graph)
-
-        # Prints the Result
-        for i in maximalIndependentSet:
-            print(i, end=" ")
-        print("\n")
-
-        max_indp_set(g)
+        print("\n", end="")
+        independent_set_recursive(g.root)
+        g.I = max(1 + sum(int(node.I) for node in g.root.grandchild), sum(int(node.I) for node in g.root.child))
+        print("Maximum independent set: {}".format(g.I))
 
     except OSError as e:
         print(e)

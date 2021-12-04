@@ -1,5 +1,6 @@
 """
     - importowanie danych z plików
+    - szukanie niezaleznego setu danych
 """
 
 
@@ -18,55 +19,17 @@ def import_file(filename):
     return edge_list
 
 
-def graphSets(graph):
-    # Base Case - Given Graph
-    # has no nodes
-    if (len(graph) == 0):
-        return []
+def independent_set_recursive(node):
+    """ Start from root and go recursive """
+    i = 0
 
-    # Base Case - Given Graph
-    # has 1 node
-    if (len(graph) == 1):
-        return [list(graph.keys())[0]]
+    if node.is_leaf:
+        node.I = 1
+    elif node.has_children and node.children_count > i:
+        while node.children_count > i:
+            independent_set_recursive(node.child[i])
+            node.I += node.child[i].I
+            i += 1
 
-    # Select a vertex from the graph
-    vCurrent = list(graph.keys())[0]
+    print("Node {}: I = {}".format(node.v, node.I))
 
-    # Case 1 - Proceed removing
-    # the selected vertex
-    # from the Maximal Set
-    graph2 = dict(graph)
-
-    # Delete current vertex
-    # from the Graph
-    del graph2[vCurrent]
-
-    # Recursive call - Gets
-    # Maximal Set,
-    # assuming current Vertex
-    # not selected
-    res1 = graphSets(graph2)
-
-    # Case 2 - Proceed considering
-    # the selected vertex as part
-    # of the Maximal Set
-
-    # Loop through its neighbours
-    for v in graph[vCurrent]:
-
-        # Delete neighbor from
-        # the current subgraph
-        if (v in graph2):
-            del graph2[v]
-
-    # This result set contains VFirst,
-    # and the result of recursive
-    # call assuming neighbors of vFirst
-    # are not selected
-    res2 = [vCurrent] + graphSets(graph2)
-
-    # Our final result is the one
-    # which is bigger, return it
-    if (len(res1) > len(res2)):
-        return res1
-    return res2
