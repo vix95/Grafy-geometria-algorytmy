@@ -9,7 +9,7 @@ def run_program(edges, name):
     try:
         g = Graph(edges=edges)
         g.build()
-        # g.print_graph()
+        g.print_graph()
         g.visualize()
         independent_set_recursive(g.root)
 
