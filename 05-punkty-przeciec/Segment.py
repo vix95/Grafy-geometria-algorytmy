@@ -6,3 +6,4 @@ class Segment:
         self.start = start
         self.end = end
         self.segment_index = segment_index
+        self.segment_type = self.start.segment_type

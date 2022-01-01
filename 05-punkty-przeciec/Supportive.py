@@ -1,42 +1,46 @@
 from matplotlib import pyplot as plt
-from Area import Point
+from Point import Point
+from SegmentType import SegmentType
 import numpy as np
+
+PRINT_ANNOTATE = False
 
 
 def import_file(filename):
-    edge_list = []
+    point_list = []
 
     with open(filename, 'r') as f:
-        for coord in f.readlines():
-            tmp = coord.strip().split(";")
-            p1 = tuple(map(float, tmp[0].split(",")))
-            p2 = tuple(map(float, tmp[1].split(",")))
-            edge_list.append([p1, p2])
+        for line in f.readlines():
+            tmp = line.strip().split(", ")
+            point = Point(
+                segment_id=int(tmp[0]),
+                x=float(tmp[1]),
+                y=float(tmp[2]),
+                is_start=tmp[3] == 'True',
+                segment_type=eval(tmp[4]))
+            point_list.append(point)
 
-    return edge_list
+    return point_list
 
 
 def draw_plot(area):
-    x = [point.x for point in area.C_points]
-    y = [point.y for point in area.C_points]
+    x = [point.x for point in area.points]
+    y = [point.y for point in area.points]
 
     # area.ax.scatter(x, y, s=20, color='k')
 
-    for i, point in enumerate(area.C_points):
-        area.ax.annotate(point, (x[i] + 0.02, y[i] + 0.04), fontsize=12)
+    if PRINT_ANNOTATE:
+        for i, point in enumerate(area.points):
+            area.ax.annotate(point, (x[i] + 0.02, y[i] + 0.04), fontsize=12)
 
-    for i, pair in enumerate(area.points):
-        p1 = Point(x=pair[0][0], y=pair[0][1])
-        p2 = Point(x=pair[1][0], y=pair[1][1])
+    for i in range(0, len(area.points), 2):
+        p1 = area.points[i]
+        p2 = area.points[i + 1]
         area.ax.plot([p1.x, p2.x], [p1.y, p2.y], color="black", linewidth=3)
 
     area.ax.margins(x=0.2, y=0.2)
-    plt.xticks(np.arange(0, area.X_PLOT_SIZE + 1, 1.0))
-    plt.yticks(np.arange(0, area.Y_PLOT_SIZE + 1, 1.0))
-
-
-def draw_line(area):
-    plt.axvline(x=area.line, linewidth=2, linestyle="dashed", color="red")
+    plt.xticks(np.arange(area.X_PLOT_SIZE_MIN, area.X_PLOT_SIZE_MAX + 1, 1.0))
+    plt.yticks(np.arange(area.Y_PLOT_SIZE_MIN, area.Y_PLOT_SIZE_MAX + 1, 1.0))
 
 
 def draw_intersections(area):
@@ -44,6 +48,9 @@ def draw_intersections(area):
     y = [point.y for point in area.intersections]
 
     area.ax.scatter(x, y, s=40, color="red", zorder=10)
-    plt.xticks(np.arange(0, area.X_PLOT_SIZE + 1, 1.0))
-    plt.yticks(np.arange(0, area.Y_PLOT_SIZE + 1, 1.0))
+    plt.xticks(np.arange(area.X_PLOT_SIZE_MIN, area.X_PLOT_SIZE_MAX + 1, 1.0))
+    plt.yticks(np.arange(area.Y_PLOT_SIZE_MIN, area.Y_PLOT_SIZE_MAX + 1, 1.0))
 
+
+def set_title(area, tree):
+    area.fig.suptitle(f"Count of crossed segments: {tree.crossed_qty}", fontsize=16)

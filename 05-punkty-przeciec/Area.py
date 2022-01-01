@@ -1,31 +1,34 @@
 from matplotlib import pyplot as plt
-
-
-class Point:
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-    def __str__(self):
-        return f"({self.x}, {self.y})"
+from Point import SimplePoint
+from SegmentType import SegmentType
 
 
 class Area:
     def __init__(self, points):
-        self.X_PLOT_SIZE = 15
-        self.Y_PLOT_SIZE = 7
-        self.fig, self.ax = plt.subplots(figsize=(self.X_PLOT_SIZE, self.Y_PLOT_SIZE), dpi=100)
+        self.X_PLOT_SIZE_MIN = 0
+        self.X_PLOT_SIZE_MAX = 0
+        self.Y_PLOT_SIZE_MIN = 0
+        self.Y_PLOT_SIZE_MAX = 0
         self.points = points
-        self.C_points = []
-        self.line = 0  # default value as 0; from left to right
+        self.set_chart_size()
         self.intersections = []
+        self.fig, self.ax = plt.subplots(figsize=(self.X_PLOT_SIZE_MAX + 2, self.Y_PLOT_SIZE_MAX + 2), dpi=100)
 
-        for pair in self.points:
-            self.C_points.append(Point(x=pair[0][0], y=pair[0][1]))
-            self.C_points.append(Point(x=pair[1][0], y=pair[1][1]))
+    def add_intersection(self, segment, vertical):
+        def calc_det(a, b):
+            return a[0] * b[1] - a[1] * b[0]
 
-    def add_intersection(self, tup):
-        self.intersections.append(Point(x=tup[0], y=tup[1]))
+        x_difference = (segment.start.x - segment.end.x, vertical.start.x - vertical.end.x)
+        y_difference = (segment.start.y - segment.end.y, vertical.start.y - vertical.end.y)
+
+        div = calc_det(x_difference, y_difference)
+        d = (calc_det(a=(segment.start.x, segment.start.y), b=(segment.end.x, segment.end.y)),
+             calc_det(a=(vertical.start.x, vertical.start.y), b=(vertical.end.x, vertical.end.y)))
+
+        x = calc_det(d, x_difference) / div
+        y = calc_det(d, y_difference) / div
+
+        self.intersections.append(SimplePoint(x=x, y=y))
 
     def print_intersections(self):
         if len(self.intersections) > 0:
@@ -37,5 +40,21 @@ class Area:
 
         return
 
-    def met_horizontal_line(self, line):
-        return self.line == line[0][0] and self.line == line[1][0]
+    def get_sorted_points(self):
+        points = self.points
+        points.sort(key=lambda point: (point.x, not point.is_start, point.segment_type, point.y))
+        return points
+
+    def set_chart_size(self):
+        for point in self.points:
+            if point.x < self.X_PLOT_SIZE_MIN:
+                self.X_PLOT_SIZE_MIN = point.x
+
+            if point.x > self.X_PLOT_SIZE_MAX:
+                self.X_PLOT_SIZE_MAX = point.x
+
+            if point.y < self.Y_PLOT_SIZE_MIN:
+                self.Y_PLOT_SIZE_MIN = point.y
+
+            if point.y > self.Y_PLOT_SIZE_MAX:
+                self.Y_PLOT_SIZE_MAX = point.y
