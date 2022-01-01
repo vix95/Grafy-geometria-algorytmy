@@ -9,14 +9,14 @@ PRINT_ANNOTATE = False
 def import_file(filename):
     point_list = []
 
-    with open(filename, 'r') as f:
+    with open(filename, "r") as f:
         for line in f.readlines():
             tmp = line.strip().split(", ")
             point = Point(
                 segment_id=int(tmp[0]),
                 x=float(tmp[1]),
                 y=float(tmp[2]),
-                is_start=tmp[3] == 'True',
+                is_start=tmp[3] == "True",
                 segment_type=eval(tmp[4]))
             point_list.append(point)
 
@@ -27,7 +27,7 @@ def draw_plot(area):
     x = [point.x for point in area.points]
     y = [point.y for point in area.points]
 
-    # area.ax.scatter(x, y, s=20, color='k')
+    # area.ax.scatter(x, y, s=20, color="k")
 
     if PRINT_ANNOTATE:
         for i, point in enumerate(area.points):

@@ -1,5 +1,4 @@
 import os
-
 from SegmentType import SegmentType
 from Segment import Segment
 from Supportive import import_file, draw_plot, draw_intersections, set_title
@@ -10,10 +9,8 @@ from matplotlib import pyplot as plt
 
 def run_program(area, name):
     draw_plot(area=area)
-
     C_Tree = Tree()
     C_Tree.points = area.get_sorted_points()
-
     print(f"File: {name}")
 
     while C_Tree.points:

@@ -11,14 +11,14 @@ class Tree:
 
     def add_node(self, segment: Segment):
         node = Node(segment=segment)
-        k = segment.start.y
+        key = segment.start.y
         p = self.root
 
         if p is None:
             self.root = node
         elif p is not None:
             while True:
-                if k < p.key[0]:
+                if key < p.key[0]:
                     if p.left is None:
                         p.left = node
                         break
@@ -31,22 +31,6 @@ class Tree:
                         break
                     else:
                         p = p.right
-
-    def find_node(self, search_segment: Segment, p_visited: Node = None):
-        p = self.root
-        while p is not None and p.segment != search_segment:
-            if search_segment.start.y < p.key[0] and p.left is not None:
-                p = p.left
-            elif p.right is not None:
-                p = p.right
-            else:
-                if p_visited is None:
-                    break
-                elif p_visited == p:
-                    p = None
-                    break
-
-        return p
 
     def remove_node(self, root, key):
         if root is None:
@@ -77,12 +61,12 @@ class Tree:
 
     @staticmethod
     def find_left_most_leaf(node):
-        current = node
+        p = node
 
-        while current.left is not None:
-            current = current.left
+        while p.left is not None:
+            p = p.left
 
-        return current
+        return p
 
     def find_end_of_segment(self, index):
         for i, point in enumerate(self.points):
