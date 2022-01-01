@@ -1,0 +1,3 @@
+class SegmentType:
+    HORIZONTAL = "HORIZONTAL"
+    VERTICAL = "VERTICAL"
