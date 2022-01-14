@@ -1,5 +1,6 @@
 from matplotlib import pyplot as plt
 from Point import Point
+from Segment import Segment
 from SegmentType import SegmentType
 import numpy as np
 
@@ -8,19 +9,35 @@ PRINT_ANNOTATE = False
 
 def import_file(filename):
     point_list = []
+    segments = []
 
     with open(filename, "r") as f:
+        row = 0
         for line in f.readlines():
             tmp = line.strip().split(", ")
             point = Point(
-                segment_id=int(tmp[0]),
-                x=float(tmp[1]),
-                y=float(tmp[2]),
-                is_start=tmp[3] == "True",
-                segment_type=eval(tmp[4]))
+                segment_id=int(row / 2),
+                x=float(tmp[0]),
+                y=float(tmp[1]),
+                is_start=row % 2 == 0)
             point_list.append(point)
+            row += 1
 
-    return point_list
+            if row % 2 == 0:
+                if point_list[row - 2].y == point_list[row - 1].y:
+                    point_list[row - 2].segment_type = SegmentType.HORIZONTAL
+                    point_list[row - 1].segment_type = SegmentType.HORIZONTAL
+                else:
+                    point_list[row - 2].segment_type = SegmentType.VERTICAL
+                    point_list[row - 1].segment_type = SegmentType.VERTICAL
+
+                segment = Segment(start=point_list[row - 2], end=point_list[row - 1],
+                                  segment_index=point_list[row - 2].segment_id)
+                segments.append(segment)
+                point_list[row - 2].segment = segment
+                point_list[row - 1].segment = segment
+
+    return point_list, segments
 
 
 def draw_plot(area):

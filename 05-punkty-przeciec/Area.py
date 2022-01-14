@@ -4,12 +4,13 @@ from SegmentType import SegmentType
 
 
 class Area:
-    def __init__(self, points):
+    def __init__(self, points, segments):
         self.X_PLOT_SIZE_MIN = 0
         self.X_PLOT_SIZE_MAX = 0
         self.Y_PLOT_SIZE_MIN = 0
         self.Y_PLOT_SIZE_MAX = 0
         self.points = points
+        self.segments = segments
         self.set_chart_size()
         self.intersections = []
         self.fig, self.ax = plt.subplots(figsize=(self.X_PLOT_SIZE_MAX + 2, self.Y_PLOT_SIZE_MAX + 2), dpi=100)

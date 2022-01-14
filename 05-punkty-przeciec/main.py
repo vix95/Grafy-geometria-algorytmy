@@ -3,25 +3,26 @@ from SegmentType import SegmentType
 from Segment import Segment
 from Supportive import import_file, draw_plot, draw_intersections, set_title
 from Area import Area
-from Tree import Tree
 from matplotlib import pyplot as plt
+from treelib import Node, Tree
 
 
 def run_program(area, name):
     draw_plot(area=area)
-    C_Tree = Tree()
-    C_Tree.points = area.get_sorted_points()
+    tree = Tree()
+    sorted_points = area.get_sorted_points()
     print(f"File: {name}")
 
-    while C_Tree.points:
+    iteration = 0
+    while sorted_points:
         segment = None
-        current_point = C_Tree.points.pop(0)
+        current_point = sorted_points.pop(0)
         if current_point.is_start:
-            end_of_segment_id = C_Tree.find_end_of_segment(index=current_point.segment_id)
-            end_of_segment = C_Tree.points[end_of_segment_id]
-            segment = Segment(start=current_point, end=end_of_segment, segment_index=current_point.segment_id)
+            segment = current_point.segment
 
         if current_point.segment_type == SegmentType.HORIZONTAL:
+            if iteration == 0:
+                tree.create_node(tag=segment, identifier=current_point)
             if current_point.is_start:
                 C_Tree.add_node(segment=segment)
 
@@ -38,6 +39,8 @@ def run_program(area, name):
                     print(f"Crossing SEGMENT #{h_segment.segment_index}: {h_segment.start}, {h_segment.end}\t\t"
                           f"VERTICAL #{v_segment.segment_index}: {v_segment.start}, {v_segment.end}")
 
+        iteration += 1
+
     draw_intersections(area=area)
     set_title(area=area, tree=C_Tree)
     print(f"COUNT of crossed segments: {C_Tree.crossed_qty}\n")
@@ -48,7 +51,8 @@ def from_files():
     for root, dirs, files in os.walk('input/', topdown=False):
         for name in files:
             f = os.path.join(root, name)
-            run_program(Area(import_file(f)), name)
+            points, segments = import_file(f)
+            run_program(Area(points=points, segments=segments), name)
 
 
 if __name__ == '__main__':
