@@ -1,8 +1,0 @@
-2, -2, -1, True, SegmentType.HORIZONTAL
-2, -1, -1, False, SegmentType.HORIZONTAL
-9, -1, -2, True, SegmentType.HORIZONTAL
-9, 1, -2, False, SegmentType.HORIZONTAL
-10, -1, 0, True, SegmentType.HORIZONTAL
-10, 1, 0, False, SegmentType.HORIZONTAL
-13, 1, -3, True, SegmentType.VERTICAL
-13, 1, 2, False, SegmentType.VERTICAL

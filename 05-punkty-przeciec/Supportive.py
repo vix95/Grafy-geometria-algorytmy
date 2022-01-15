@@ -4,7 +4,7 @@ from Segment import Segment
 from SegmentType import SegmentType
 import numpy as np
 
-PRINT_ANNOTATE = False
+PRINT_ANNOTATE = True
 
 
 def import_file(filename):
@@ -48,7 +48,7 @@ def draw_plot(area):
 
     if PRINT_ANNOTATE:
         for i, point in enumerate(area.points):
-            area.ax.annotate(point, (x[i] + 0.02, y[i] + 0.04), fontsize=12)
+            area.ax.annotate("S" + str(point.segment_id), (x[i] + 0.02, y[i] + 0.04), fontsize=12)
 
     for i in range(0, len(area.points), 2):
         p1 = area.points[i]

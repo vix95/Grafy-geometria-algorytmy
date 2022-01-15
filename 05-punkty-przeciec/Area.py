@@ -1,6 +1,5 @@
 from matplotlib import pyplot as plt
 from Point import SimplePoint
-from SegmentType import SegmentType
 
 
 class Area:

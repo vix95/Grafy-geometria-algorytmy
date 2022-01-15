@@ -1,45 +1,34 @@
 import os
 from SegmentType import SegmentType
-from Segment import Segment
 from Supportive import import_file, draw_plot, draw_intersections, set_title
 from Area import Area
+from Tree import Tree
 from matplotlib import pyplot as plt
-from treelib import Node, Tree
 
 
 def run_program(area, name):
     draw_plot(area=area)
-    tree = Tree()
-    sorted_points = area.get_sorted_points()
+    C_Tree = Tree()
+    C_Tree.points = area.get_sorted_points()
     print(f"File: {name}")
 
-    iteration = 0
-    while sorted_points:
-        segment = None
-        current_point = sorted_points.pop(0)
-        if current_point.is_start:
-            segment = current_point.segment
-
-        if current_point.segment_type == SegmentType.HORIZONTAL:
-            if iteration == 0:
-                tree.create_node(tag=segment, identifier=current_point)
+    while C_Tree.points:
+        current_point = C_Tree.points.pop(0)
+        if current_point.segment.segment_type == SegmentType.HORIZONTAL:
             if current_point.is_start:
-                C_Tree.add_node(segment=segment)
+                C_Tree.root = C_Tree.insert_node(segment=current_point.segment, root=C_Tree.root, key=current_point.segment.start.y)
 
             elif not current_point.is_start:
-                C_Tree.root = C_Tree.remove_node(root=C_Tree.root, key=(current_point.y, current_point.segment_id))
+                C_Tree.root = C_Tree.delete_node(root=C_Tree.root, key=current_point.y)
 
-        elif current_point.segment_type == SegmentType.VERTICAL and current_point.is_start:
-            crossed = C_Tree.get_crossed(vertical_segment=segment)
+        elif current_point.segment.segment_type == SegmentType.VERTICAL and current_point.is_start:
+            crossed = C_Tree.get_crossed(vertical_segment=current_point.segment)
 
             if crossed:
-                v_segment = segment
+                v_segment = current_point.segment
                 for h_segment in crossed:
                     area.add_intersection(segment=h_segment, vertical=v_segment)
-                    print(f"Crossing SEGMENT #{h_segment.segment_index}: {h_segment.start}, {h_segment.end}\t\t"
-                          f"VERTICAL #{v_segment.segment_index}: {v_segment.start}, {v_segment.end}")
-
-        iteration += 1
+                    print(f"Crossing SEGMENT #{h_segment.segment_index}: {h_segment.start}, {h_segment.end}\t\tVERTICAL #{v_segment.segment_index}: {v_segment.start}, {v_segment.end}")
 
     draw_intersections(area=area)
     set_title(area=area, tree=C_Tree)
